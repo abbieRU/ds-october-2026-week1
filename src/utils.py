@@ -45,3 +45,51 @@ def load_csv_as_dataframe(file_name: str) -> DataFrame:
         raise FileNotFoundError(f"The csv file {file_name} couldn't be located in the parent folder ({parent}) or in the /data/raw/ folder")
     
     return read_csv(file_path)
+
+
+
+def validate_dataframe(df: DataFrame) -> None:
+    if not isinstance(df, DataFrame):
+        raise TypeError(
+                f"df is not an instance of DataFrame. Got type {type(df).__name__}"
+            )
+
+
+
+def get_entire_row(df: DataFrame, column_name: str, min_row=True) -> DataFrame:
+    """
+    Takes a DataFrame and a column name and returns the entire row
+    containing the minimum value in that column if the `min_row` is
+    set to True else returns the maximum value in that colum
+
+    Args:
+        df (DataFrame): The DataFrame containing the data.
+        column_name (str): The name of the column to search.
+        min_row : bool: Defaults to True, returns the minimum value for that
+                    row. if set to False returns the maximun value in that row
+
+    Raises:
+        TypeError:
+            If df is not a DataFrame.
+            If column_name is not a string.
+
+    Example:
+        >>> get_entire_row(df, "Age")
+    """
+
+    validate_dataframe(df)
+
+    if not isinstance(column_name, str):
+        raise TypeError(
+            f"Column name is not a string. "
+            f"Expected a string, got type {type(column_name).__name__}"
+        )
+
+    if not isinstance(min_row, bool):
+        raise TypeError(
+            f"The min_row parameter is not a bool. Got type {type(min_row).__name__}"
+        )
+
+    if min_row:
+        return df.loc[[df[column_name].idxmin()]]
+    return df.loc[[df[column_name].idxmax()]]
